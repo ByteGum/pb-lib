@@ -272,8 +272,4 @@ export class BaseService<T extends Document, E extends BaseEntity> {
       count,
     };
   }
-
-  getLang() {
-    return {};
-  }
 }
