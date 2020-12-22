@@ -1,6 +1,6 @@
 {
   "name": "@tpboard/libs",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Okafor Emmanuel",
   "main": "dist/_shared",
   "license": "UNLICENSED",
