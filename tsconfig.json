@@ -1,22 +1,22 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "declaration": true,
+    "declaration": false,
+    "noImplicitAny": false,
     "removeComments": true,
+    "noLib": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
     "target": "es6",
     "sourceMap": false,
+    "allowJs": true,
     "outDir": "./dist",
-    "rootDir": "./src",
     "baseUrl": "./",
-    "noLib": false
+    "incremental": true
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*", "src/migrations/1593493532903-CreateBasicReports.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules", "dist"]
 }

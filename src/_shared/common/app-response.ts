@@ -18,6 +18,7 @@ export class AppResponse {
    * @return {Object} The success response object
    */
   static format(meta: any, data = null) {
+    console.log('meta ', meta);
     const response: any = {};
     response.meta = meta;
     if (data) {
