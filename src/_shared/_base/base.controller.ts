@@ -9,7 +9,9 @@ import { Pagination, QueryParser } from '../common';
 import { BaseEntity } from './base.entity';
 
 export class BaseController<T extends Document, M extends BaseEntity> {
-  protected lang: any;
+  protected lang: any = {
+    get: () => {}
+  };
 
   constructor(
     protected config: ConfigService,
