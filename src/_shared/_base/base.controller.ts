@@ -9,13 +9,12 @@ import { Pagination, QueryParser } from '../common';
 import { BaseEntity } from './base.entity';
 
 export class BaseController<T extends Document, M extends BaseEntity> {
-  private lang: any;
+  protected lang: any;
 
   constructor(
     protected config: ConfigService,
     protected service: BaseService<T, M>,
   ) {
-    this.lang = service.getLang();
   }
 
   @Post('/')
@@ -165,7 +164,7 @@ export class BaseController<T extends Document, M extends BaseEntity> {
       const response = await this.service.getResponse({
         code: HttpStatus.OK,
         value: { _id: object._id },
-        message: this.lang.get(this.service.modelName).deleted,
+        message: this.lang.get().deleted,
       });
       return res.status(HttpStatus.OK).json(response);
     } catch (err) {

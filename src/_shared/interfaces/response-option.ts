@@ -1,5 +1,5 @@
 import { Document } from 'mongoose';
-import { QueryParser, Pagination } from '../common';
+import { Pagination, QueryParser } from '../common';
 
 export interface ResponseOption {
   value: any | Document;
