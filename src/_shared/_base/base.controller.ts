@@ -10,7 +10,15 @@ import { BaseEntity } from './base.entity';
 
 export class BaseController<T extends Document, M extends BaseEntity> {
   protected lang: any = {
-    get: () => {
+    get: (key = 'data') => {
+      return {
+        data: {
+          created: 'Data successfully created',
+          updated: 'Data successfully updated',
+          deleted: 'Data successfully deleted',
+          not_found: 'Data not found',
+        },
+      };
     },
   };
 
