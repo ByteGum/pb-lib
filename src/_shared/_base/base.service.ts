@@ -17,7 +17,7 @@ export class BaseService<T extends Document, E extends BaseEntity> {
     remove: true,
   };
   public readonly modelName: string;
-  public baseUrl: string;
+  public baseUrl: string = 'localhost:3000';
   public itemsPerPage: number = 10;
 
   constructor(
