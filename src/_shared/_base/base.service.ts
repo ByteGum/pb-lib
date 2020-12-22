@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { isArray } from 'class-validator';
 import { Utils } from '../utils/utils';
 import { ResponseOption } from '../interfaces/response-option';
-import {QueryParser, Pagination, AppResponse} from '../common';
+import { AppResponse, Pagination, QueryParser } from '../common';
 import AppException from '../exceptions/app-exception';
 import { BaseEntity } from './base.entity';
 
@@ -17,6 +17,8 @@ export class BaseService<T extends Document, E extends BaseEntity> {
     remove: true,
   };
   public readonly modelName: string;
+  public baseUrl: string;
+  public itemsPerPage: number = 10;
 
   constructor(
     protected entity: E,

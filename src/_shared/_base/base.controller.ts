@@ -10,7 +10,8 @@ import { BaseEntity } from './base.entity';
 
 export class BaseController<T extends Document, M extends BaseEntity> {
   protected lang: any = {
-    get: () => {}
+    get: () => {
+    },
   };
 
   constructor(
@@ -52,7 +53,8 @@ export class BaseController<T extends Document, M extends BaseEntity> {
   @HttpCode(HttpStatus.OK)
   public async find(@Req() req, @Res() res) {
     const queryParser = new QueryParser(Object.assign({}, req.query));
-    const pagination = new Pagination(req.originalUrl, 'comment');
+    const pagination = new Pagination(req.originalUrl, this.service.baseUrl,
+      this.service.itemsPerPage);
     try {
       const { value, count } = await this.service.buildModelQueryObject(
         pagination,

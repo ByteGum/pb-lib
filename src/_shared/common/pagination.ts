@@ -32,7 +32,7 @@ export class Pagination {
    * @param {String} url This is a query object
    * @param {String} itemsPerPage This is a query object
    */
-  constructor(private requestUrl: string, url: string, itemsPerPage?: number) {
+  constructor(private requestUrl: string, url: string, itemsPerPage: number = 10) {
     // Default pagination object
     this.urlObj = new Url(`${url}${requestUrl}`);
     const urlObj: Url = this.urlObj;
