@@ -5,7 +5,7 @@ Planboard shared modules.
 ## Installation
 
 ```bash
-$ npm install @tpboard/libs
+$ npm install @tpboard/slibs
 ```
 ## Stay in touch
 

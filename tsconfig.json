@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "declaration": false,
+    "declaration": true,
     "noImplicitAny": false,
     "removeComments": true,
     "noLib": false,
@@ -13,10 +13,11 @@
     "allowJs": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "incremental": true
+    "incremental": true,
+    "rootDir": "./src"
   },
   "include": [
-    "src/**/*", "src/migrations/1593493532903-CreateBasicReports.ts"
+    "src/**/*"
   ],
   "exclude": ["node_modules", "dist"]
 }
