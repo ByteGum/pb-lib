@@ -6,7 +6,7 @@ export default () => ({
   services: {
     todo: {
       serviceName: 'Todo Service',
-      port: 8010,
+      port: 3010,
       host: 'http://localhost:3010',
       url: `http://localhost:3010`,
       version: 1,

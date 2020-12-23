@@ -21,7 +21,6 @@ import { NextFunction } from 'express';
 import { BaseController } from '../../../_shared/_base';
 import { JwtAuthGuard } from '../../../_shared/guards';
 
-@UseGuards(JwtAuthGuard)
 @Controller('todos')
 export class TodoController extends BaseController<TodoDocument, Todo> {
   constructor(protected service: TodoService, protected config: ConfigService) {
