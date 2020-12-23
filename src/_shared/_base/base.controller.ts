@@ -118,6 +118,7 @@ export class BaseController<T extends Document, M extends BaseEntity> {
         queryParser,
         code: HttpStatus.OK,
         value: object,
+        message: this.lang.get(this.service.modelName).updated,
       });
       return res.status(HttpStatus.OK).json(response);
     } catch (err) {
@@ -151,6 +152,7 @@ export class BaseController<T extends Document, M extends BaseEntity> {
         queryParser,
         code: HttpStatus.OK,
         value: object,
+        message: this.lang.get(this.service.modelName).deleted,
       });
       return res.status(HttpStatus.OK).json(response);
     } catch (err) {
@@ -174,7 +176,7 @@ export class BaseController<T extends Document, M extends BaseEntity> {
       const response = await this.service.getResponse({
         code: HttpStatus.OK,
         value: { _id: object._id },
-        message: this.lang.get().deleted,
+        message: this.lang.get(this.service.modelName).deleted,
       });
       return res.status(HttpStatus.OK).json(response);
     } catch (err) {
