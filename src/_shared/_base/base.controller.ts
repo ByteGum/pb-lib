@@ -46,7 +46,7 @@ export class BaseController<T extends Document, M extends BaseEntity> {
       const response = await this.service.getResponse({
         queryParser,
         value,
-        code: HttpStatus.OK,
+        code: HttpStatus.CREATED,
         message: this.lang.get(this.service.modelName).created,
       });
       return res.status(HttpStatus.OK).json(response);

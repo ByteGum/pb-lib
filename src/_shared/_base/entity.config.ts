@@ -9,7 +9,7 @@ interface EntityConfigOption {
 export class EntityConfig {
   public _id;
   public deleted: boolean;
-  public publicId: string;
+  public publicId?: string;
   public iDToken = 'kol';
 
   protected fillables = [];
