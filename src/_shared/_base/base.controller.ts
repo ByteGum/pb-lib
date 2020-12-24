@@ -57,7 +57,7 @@ export class BaseController<T extends Document, M extends BaseEntity> {
 
   @Get('/')
   @HttpCode(HttpStatus.OK)
-  public async find(@Req() req, @Res() res) {
+  public async find(@Req() req, @Res() res, @Next() next: NextFunction) {
     const queryParser = new QueryParser(Object.assign({}, req.query));
     const pagination = new Pagination(req.originalUrl, this.service.baseUrl,
       this.service.itemsPerPage);
@@ -75,13 +75,13 @@ export class BaseController<T extends Document, M extends BaseEntity> {
       });
       return res.status(HttpStatus.OK).json(response);
     } catch (err) {
-      throw err;
+      next(err);
     }
   }
 
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
-  public async findOne(@Param('id') id: string, @Req() req, @Res() res) {
+  public async findOne(@Param('id') id: string, @Req() req, @Res() res, @Next() next: NextFunction) {
     try {
       const queryParser = new QueryParser(Object.assign({}, req.query));
       const object = await this.service.findObject(id, queryParser);
@@ -92,7 +92,7 @@ export class BaseController<T extends Document, M extends BaseEntity> {
       });
       return res.status(HttpStatus.OK).json(response);
     } catch (err) {
-      throw err;
+      next(err);
     }
   }
 
@@ -103,6 +103,7 @@ export class BaseController<T extends Document, M extends BaseEntity> {
     @Body() payload: any,
     @Req() req,
     @Res() res,
+    @Next() next: NextFunction
   ) {
     try {
       if (!this.service.routes.patch) {
@@ -122,7 +123,7 @@ export class BaseController<T extends Document, M extends BaseEntity> {
       });
       return res.status(HttpStatus.OK).json(response);
     } catch (err) {
-      throw err;
+      return next(err);
     }
   }
 
@@ -133,6 +134,7 @@ export class BaseController<T extends Document, M extends BaseEntity> {
     @Body() payload: any,
     @Req() req,
     @Res() res,
+    @Next() next: NextFunction
   ) {
     try {
       if (!this.service.routes.update) {
@@ -156,13 +158,13 @@ export class BaseController<T extends Document, M extends BaseEntity> {
       });
       return res.status(HttpStatus.OK).json(response);
     } catch (err) {
-      throw err;
+      next(err);
     }
   }
 
   @Delete('/:id')
   @HttpCode(HttpStatus.OK)
-  public async remove(@Param('id') id: string, @Req() req, @Res() res) {
+  public async remove(@Param('id') id: string, @Req() req, @Res() res,  @Next() next: NextFunction) {
     try {
       if (!this.service.routes.remove) {
         throw AppException.NOT_FOUND;
@@ -180,7 +182,7 @@ export class BaseController<T extends Document, M extends BaseEntity> {
       });
       return res.status(HttpStatus.OK).json(response);
     } catch (err) {
-      throw err;
+      next(err);
     }
   }
 }

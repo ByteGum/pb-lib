@@ -40,8 +40,9 @@ export class TodoController extends BaseController<TodoDocument, Todo> {
     @Body() payload: UpdateTodoDto,
     @Req() req,
     @Res() res,
+    @Next() next: NextFunction
   ) {
-    super.update(id, payload, req, res);
+    super.update(id, payload, req, res, next);
   }
 
   @Patch('/:id')
@@ -51,7 +52,8 @@ export class TodoController extends BaseController<TodoDocument, Todo> {
     @Body() payload: UpdateTodoDto,
     @Req() req,
     @Res() res,
+    @Next() next: NextFunction
   ) {
-    super.patch(id, payload, req, res);
+    super.patch(id, payload, req, res,  next);
   }
 }
