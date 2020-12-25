@@ -13,7 +13,7 @@ import { JwtModule } from '@nestjs/jwt';
     MongooseModule.forRootAsync({
       useFactory: (config: ConfigService) => {
         return {
-          uri: config.get('services.todo.mongodb.url'),
+          uri: config.get('service.mongodb.url'),
           useNewUrlParser: true,
           useUnifiedTopology: true,
         };

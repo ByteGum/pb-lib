@@ -41,7 +41,7 @@ export class BaseController<T extends Document, M extends BaseEntity> {
       }
       const value = await this.service.createNewObject({
         ...payload,
-        ...req.auth,
+        auth: req.auth,
       });
       const response = await this.service.getResponse({
         queryParser,
@@ -103,7 +103,7 @@ export class BaseController<T extends Document, M extends BaseEntity> {
     @Body() payload: any,
     @Req() req,
     @Res() res,
-    @Next() next: NextFunction
+    @Next() next: NextFunction,
   ) {
     try {
       if (!this.service.routes.patch) {
@@ -113,7 +113,7 @@ export class BaseController<T extends Document, M extends BaseEntity> {
       let object = await this.service.findObject(id, queryParser);
       object = await this.service.patchUpdate(object, {
         ...payload,
-        ...req.auth,
+        auth: req.auth,
       });
       const response = await this.service.getResponse({
         queryParser,
@@ -134,7 +134,7 @@ export class BaseController<T extends Document, M extends BaseEntity> {
     @Body() payload: any,
     @Req() req,
     @Res() res,
-    @Next() next: NextFunction
+    @Next() next: NextFunction,
   ) {
     try {
       if (!this.service.routes.update) {
@@ -144,7 +144,7 @@ export class BaseController<T extends Document, M extends BaseEntity> {
       let object = await this.service.findObject(id, queryParser);
       const canUpdateError = await this.service.validateUpdate(object, {
         ...payload,
-        ...req.auth,
+        auth: req.auth,
       });
       if (!_.isEmpty(canUpdateError)) {
         throw canUpdateError;
@@ -164,7 +164,7 @@ export class BaseController<T extends Document, M extends BaseEntity> {
 
   @Delete('/:id')
   @HttpCode(HttpStatus.OK)
-  public async remove(@Param('id') id: string, @Req() req, @Res() res,  @Next() next: NextFunction) {
+  public async remove(@Param('id') id: string, @Req() req, @Res() res, @Next() next: NextFunction) {
     try {
       if (!this.service.routes.remove) {
         throw AppException.NOT_FOUND;

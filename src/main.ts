@@ -14,7 +14,7 @@ async function bootstrap() {
 
   const config = app.get(ConfigService);
 
-  await app.listen(config.get('services.todo.port'), () =>
+  await app.listen(config.get('service.port'), () =>
     Logger.log('Authentication Service Running...'),
   );
 }
