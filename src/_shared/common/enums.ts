@@ -8,7 +8,6 @@ export enum WorkerQueue {
   PROCESS_WORK = 'wevied.jobs.process.work',
 }
 
-
 export enum AppStatus {
   WORKER_ERROR = 1000
 }

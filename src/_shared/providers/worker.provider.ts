@@ -1,17 +1,17 @@
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
-import { WorkerQueue } from '../common';
-
-export const WORKER_SERVICE_TOKEN = 'WORKER_SERVICE_TOKEN';
+import { WorkerQueue, WorkerService } from '../common';
+import { Logger } from '@nestjs/common';
 
 export const WORKER_PROVIDERS = [
   {
-    provide: WORKER_SERVICE_TOKEN,
+    provide: WorkerService.WORKER_SERVICE_TOKEN,
     useFactory: (config: ConfigService) => {
+      Logger.log(`Rabbit MQ URL : ${config.get('service.rabbitMQ')}`);
       return ClientProxyFactory.create({
         transport: Transport.RMQ,
         options: {
-          urls: [config.get('services.worker.rabbitMQ')],
+          urls: [config.get('service.rabbitMQ')],
           queue: WorkerQueue.PROCESS_WORK,
           queueOptions: { durable: true },
         },

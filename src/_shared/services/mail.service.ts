@@ -34,7 +34,7 @@ export class MailService {
   ) {
     const emailJob = new EmailJob()
       .setFrom(emailName)
-      .setTo(emailName)
+      .setTo(this.config.get('service.sendGrid.from') || emailName)
       .setSubject(subject)
       .setTemplate(template)
       .setContent(additionalContent);
