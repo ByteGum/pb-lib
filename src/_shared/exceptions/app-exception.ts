@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { HttpException } from '@nestjs/common/exceptions/http.exception';
 
-export default class AppException extends HttpException {
+export class AppException extends HttpException {
   private errorCode: number;
 
   constructor(error: any, status: number, code = -1, message: string = null) {

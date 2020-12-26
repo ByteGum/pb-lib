@@ -4,7 +4,7 @@ import { isArray } from 'class-validator';
 import { Utils } from '../utils/utils';
 import { ResponseOption } from '../interfaces/response-option';
 import { AppResponse, Pagination, QueryParser } from '../common';
-import AppException from '../exceptions/app-exception';
+import { AppException } from '../exceptions/app-exception';
 import { BaseEntity } from './base.entity';
 
 export class BaseService<T extends Document, E extends BaseEntity> {

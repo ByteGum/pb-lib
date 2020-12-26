@@ -4,7 +4,7 @@ import { BaseService } from './base.service';
 import { Document } from 'mongoose';
 import * as _ from 'lodash';
 import { NextFunction } from 'express';
-import AppException from '../exceptions/app-exception';
+import {AppException} from '../exceptions/app-exception';
 import { Pagination, QueryParser } from '../common';
 import { BaseEntity } from './base.entity';
 
