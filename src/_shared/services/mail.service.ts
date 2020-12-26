@@ -16,6 +16,7 @@ export class MailService {
   queueToSendEmail(option: MailOption) {
     this.handleEmail(
       option.emailName,
+      option.fromEmail,
       option.subject,
       option.template,
       option.content,
@@ -28,13 +29,14 @@ export class MailService {
 
   handleEmail(
     emailName: IEmailName,
+    fromEmail: IEmailName,
     subject: string,
     template: string,
     additionalContent: any = {},
   ) {
     const emailJob = new EmailJob()
-      .setFrom(emailName)
-      .setTo(this.config.get('service.sendGrid.from') || emailName)
+      .setFrom(fromEmail)
+      .setTo(emailName)
       .setSubject(subject)
       .setTemplate(template)
       .setContent(additionalContent);
