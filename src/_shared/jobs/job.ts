@@ -5,24 +5,13 @@ import { WorkerQueue } from '../common';
 export abstract class Job implements QueueableData {
   public queueName: string;
   protected id: string;
-  protected data?: string;
 
-  constructor(queueName: WorkerQueue, data?: any) {
+  constructor(queueName: WorkerQueue) {
     this.queueName = queueName;
-    this.data = data;
     this.id = Utils.generateRandomID(16);
   }
 
   public getId() {
     return this.id;
-  }
-
-  public setData(data: any) {
-    this.data = data;
-    return this;
-  }
-
-  public getData(data: any) {
-    return this.data;
   }
 }
