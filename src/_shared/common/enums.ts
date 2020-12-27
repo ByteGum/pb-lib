@@ -2,6 +2,7 @@ export enum QueueTasks {
   UPLOAD_PHOTO = 'task.upload.photo',
   SEND_SMS = 'task.send.sms',
   SEND_EMAIL = 'task.send.email',
+  PING = 'task.send.ping',
 }
 
 export enum WorkerQueue {

@@ -21,4 +21,15 @@ export class JobService {
       (e) => Logger.error(new WorkerException(e)),
     );
   }
+
+  public send(task: any, job: Job) {
+    Logger.log(`Sent Job::::${job.queueName} Task:${task}`);
+    this.client.send(task, job.getId()).subscribe(
+      (res) =>
+        Logger.log(
+          `Finished Job:::: ${job.queueName}, Task:${task} in ${res.duration}`,
+        ),
+      (e) => Logger.error(new WorkerException(e)),
+    );
+  }
 }
