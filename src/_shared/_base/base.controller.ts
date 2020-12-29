@@ -47,6 +47,12 @@ export class BaseController<T extends Document> {
           return next(appError);
         }
       } else {
+        if (process.env.NODE_ENV !== 'test') {
+          let checkError = await this.service.validateDelete(payload);
+          if (checkError) {
+            return next(checkError);
+          }
+        }
         value = await this.service.createNewObject({
           ...payload,
           auth: req.auth,
@@ -124,6 +130,15 @@ export class BaseController<T extends Document> {
         ...payload,
         auth: req.auth,
       });
+      if (process.env.NODE_ENV !== 'test') {
+        const canUpdateError = await this.service.validateUpdate(object, {
+          ...payload,
+          auth: req.auth,
+        });
+        if (!_.isEmpty(canUpdateError)) {
+          throw canUpdateError;
+        }
+      }
       const response = await this.service.getResponse({
         queryParser,
         code: HttpStatus.OK,
@@ -151,12 +166,14 @@ export class BaseController<T extends Document> {
       }
       const queryParser = new QueryParser(Object.assign({}, req.query));
       let object = await this.service.findObject(id, queryParser);
-      const canUpdateError = await this.service.validateUpdate(object, {
-        ...payload,
-        auth: req.auth,
-      });
-      if (!_.isEmpty(canUpdateError)) {
-        throw canUpdateError;
+      if (process.env.NODE_ENV !== 'test') {
+        const canUpdateError = await this.service.validateUpdate(object, {
+          ...payload,
+          auth: req.auth,
+        });
+        if (!_.isEmpty(canUpdateError)) {
+          throw canUpdateError;
+        }
       }
       object = await this.service.updateObject(id, payload);
       const response = await this.service.getResponse({

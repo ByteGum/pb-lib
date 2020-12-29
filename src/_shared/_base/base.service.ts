@@ -50,6 +50,14 @@ export class BaseService<T extends Document> {
    * @param {Object} obj required for response
    * @return {Object}
    */
+  async validateCreate(obj) {
+    return null;
+  }
+
+  /**
+   * @param {Object} obj required for response
+   * @return {Object}
+   */
   async validateDelete(obj) {
     return null;
   }
