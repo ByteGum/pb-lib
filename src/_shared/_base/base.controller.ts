@@ -4,11 +4,10 @@ import { BaseService } from './base.service';
 import { Document } from 'mongoose';
 import * as _ from 'lodash';
 import { NextFunction } from 'express';
-import {AppException} from '../exceptions/app-exception';
+import { AppException } from '../exceptions/app-exception';
 import { Pagination, QueryParser } from '../common';
-import { BaseEntity } from './base.entity';
 
-export class BaseController<T extends Document, M extends BaseEntity> {
+export class BaseController<T extends Document> {
   protected lang: any = {
     get: (key = 'data') => {
       return {
@@ -22,7 +21,7 @@ export class BaseController<T extends Document, M extends BaseEntity> {
 
   constructor(
     protected config: ConfigService,
-    protected service: BaseService<T, M>,
+    protected service: BaseService<T>,
   ) {
   }
 
@@ -39,10 +38,20 @@ export class BaseController<T extends Document, M extends BaseEntity> {
       if (!this.service.routes.create) {
         next(AppException.NOT_FOUND);
       }
-      const value = await this.service.createNewObject({
-        ...payload,
-        auth: req.auth,
-      });
+      let value = await this.service.retrieveExistingResource(payload);
+      if (value) {
+        const returnIfFound = this.service.Model.returnDuplicate;
+        if (!returnIfFound) {
+          const messageObj = this.service.Model.uniques.map(m => ({ [m]: `${m} must be unique` }));
+          const appError = new AppException('Duplicate record is not allowed', HttpStatus.CONFLICT, messageObj);
+          return next(appError);
+        }
+      } else {
+        value = await this.service.createNewObject({
+          ...payload,
+          auth: req.auth,
+        });
+      }
       const response = await this.service.getResponse({
         queryParser,
         value,

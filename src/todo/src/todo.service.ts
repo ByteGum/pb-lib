@@ -6,12 +6,11 @@ import { Todo, TodoDocument } from './entity/todo.entity';
 import { BaseService } from '../../_shared';
 
 @Injectable()
-export class TodoService extends BaseService<TodoDocument, Todo> {
+export class TodoService extends BaseService<TodoDocument> {
   constructor(
-    protected entity: Todo,
     @InjectModel(Todo.name) protected model: Model<TodoDocument>,
     protected config: ConfigService,
   ) {
-    super(entity, model);
+    super(model);
   }
 }

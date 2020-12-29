@@ -121,8 +121,8 @@ export class Utils {
    * @param {Number} length the length of the id
    * @return {Date} The date
    */
-  static generateUniqueId(key: string, length = 12) {
+  static generateUniqueId(key: string, length = 20) {
     const generator = new IdGenerator();
-    return generator.new(key);
+    return generator.new(key || 'key');
   }
 }

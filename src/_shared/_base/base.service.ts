@@ -1,13 +1,11 @@
-import { Document, Model } from 'mongoose';
+import { Document } from 'mongoose';
 import * as _ from 'lodash';
-import { isArray } from 'class-validator';
 import { Utils } from '../utils/utils';
 import { ResponseOption } from '../interfaces/response-option';
 import { AppResponse, Pagination, QueryParser } from '../common';
 import { AppException } from '../exceptions/app-exception';
-import { BaseEntity } from './base.entity';
 
-export class BaseService<T extends Document, E extends BaseEntity> {
+export class BaseService<T extends Document> {
   public routes = {
     create: true,
     findOne: true,
@@ -21,10 +19,13 @@ export class BaseService<T extends Document, E extends BaseEntity> {
   public itemsPerPage: number = 10;
 
   constructor(
-    protected entity: E,
-    protected readonly model: Model<T>,
+    protected readonly model: any,
   ) {
     this.modelName = model.collection.collectionName;
+  }
+
+  public get Model() {
+    return this.model;
   }
 
   /**
@@ -50,14 +51,15 @@ export class BaseService<T extends Document, E extends BaseEntity> {
    * @return {Object}
    */
   public async createNewObject(obj, session?) {
-    const tofill = this.entity.config().fillables;
+    const tofill = this.model.fillables;
     if (tofill && tofill.length > 0) {
       obj = _.pick(obj, ...tofill);
     }
-    return new this.model({
+    const data = new this.model({
       ...obj,
-      publicId: Utils.generateUniqueId(this.entity.iDToken),
-    }).save();
+      publicId: Utils.generateUniqueId(this.model.iDToken),
+    });
+    return data.save();
   }
 
   /**
@@ -66,7 +68,7 @@ export class BaseService<T extends Document, E extends BaseEntity> {
    * @return {Object}
    */
   async updateObject(id, obj) {
-    const tofill = this.entity.config().fillables;
+    const tofill = this.model.fillables;
     if (tofill && tofill.length > 0) {
       obj = _.pick(obj, ...tofill);
     }
@@ -83,7 +85,7 @@ export class BaseService<T extends Document, E extends BaseEntity> {
    * @return {Object}
    */
   async patchUpdate(current, obj) {
-    const tofill = this.entity.config().updateFillables;
+    const tofill = this.model.updateFillables;
     if (tofill.length > 0) {
       obj = _.pick(obj, ...tofill);
     }
@@ -110,7 +112,7 @@ export class BaseService<T extends Document, E extends BaseEntity> {
    * @return {Object}
    */
   public async deleteObject(object) {
-    if (this.entity.config().softDelete) {
+    if (this.model.softDelete) {
       _.extend(object, { deleted: true });
       object = await object.save();
     } else {
@@ -149,17 +151,12 @@ export class BaseService<T extends Document, E extends BaseEntity> {
         }
         meta.pagination = option.pagination.done();
       }
-      const hiddenField: string[] = this.entity.config().hiddenFields;
-      if (hiddenField && hiddenField.length > 0) {
-        if (isArray(option.value)) {
-          option.value = option.value.map((v) =>
-            _.omit(v, ...option.hiddenFields),
-          );
+      if (this.model.hiddenFields && this.model.hiddenFields.length > 0) {
+        const isFunction = typeof option.value.toJSON === 'function';
+        if (_.isArray(option.value)) {
+          option.value = option.value.map(v => _.omit((isFunction) ? v.toJSON() : v, ...this.model.hiddenFields));
         } else {
-          try {
-            option.value = _.omit(option.value, ...hiddenField);
-          } catch (e) {
-          }
+          option.value = _.omit((isFunction) ? option.value.toJSON() : option.value, ...this.model.hiddenFields);
         }
       }
       return AppResponse.format(meta, option.value);
@@ -169,12 +166,12 @@ export class BaseService<T extends Document, E extends BaseEntity> {
   }
 
   /**
-   * @param {BaseEntity} entity The payload object
+   * @param {Object} model The model object
    * @param {Object} options The payload object
-   * @return {Object} return the profile
+   * @return {Object}
    */
-  public async populate(entity: BaseEntity, options: any) {
-    return this.model.populate(entity, options);
+  public async populate(model: any, options: any) {
+    return this.model.populate(model, options);
   }
 
   /**
@@ -183,7 +180,7 @@ export class BaseService<T extends Document, E extends BaseEntity> {
    * @return {Object}
    */
   public async findQuery(obj, session = null) {
-    const tofill = this.entity.config().fillables;
+    const tofill = this.model.fillables;
     if (tofill && tofill.length > 0) {
       obj = _.pick(obj, ...tofill);
     }
@@ -202,10 +199,10 @@ export class BaseService<T extends Document, E extends BaseEntity> {
     console.log('queryParser.query ::::: ', queryParser.query);
     let query = this.model.find(queryParser.query);
     if (
-      queryParser.search &&
-      this.entity.searchQuery(queryParser.search).length > 0
+      queryParser.search && this.model.searchQuery &&
+      this.model.searchQuery(queryParser.search).length > 0
     ) {
-      const searchQuery = this.entity.searchQuery(queryParser.search);
+      const searchQuery = this.model.searchQuery(queryParser.search);
       queryParser.query = {
         $or: [...searchQuery],
         ...queryParser.query,
@@ -273,5 +270,24 @@ export class BaseService<T extends Document, E extends BaseEntity> {
         .collation({ locale: 'en', strength: 1 }),
       count,
     };
+  }
+
+  /**
+   * @param {Object} obj The request object
+   * @return {Promise<Object>}
+   */
+  public async retrieveExistingResource(obj) {
+    if (this.model.uniques && !_.isEmpty(this.model.uniques)) {
+      const uniqueKeys = this.model.uniques;
+      const query = {};
+      for (const key of uniqueKeys) {
+        query[key] = obj[key];
+      }
+      const found = await this.model.findOne({ ...query, deleted: false, active: true });
+      if (found) {
+        return found;
+      }
+    }
+    return null;
   }
 }

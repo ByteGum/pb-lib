@@ -1,6 +1,6 @@
 {
   "name": "@tpboard/slibs",
-  "version": "0.0.21",
+  "version": "0.0.24",
   "author": "Okafor Emmanuel",
   "main": "dist/_shared",
   "license": "UNLICENSED",
@@ -67,7 +67,8 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.3",
-    "url-parse": "^1.4.7"
+    "url-parse": "^1.4.7",
+    "util": "^0.12.3"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.5.1",

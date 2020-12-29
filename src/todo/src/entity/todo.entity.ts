@@ -1,14 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { BaseEntity } from '../../../_shared';
 
 export type TodoDocument = Todo & Document;
 
 @Schema({ timestamps: true, autoCreate: true })
-export class Todo extends BaseEntity {
-  protected fillables = ['title', 'description'];
-  protected updateFillables = ['title', 'description', 'active'];
-  public iDToken = 'tod';
+export class Todo {
 
   @Prop({
     type: String,
@@ -20,7 +16,6 @@ export class Todo extends BaseEntity {
   @Prop({
     type: String,
     required: true,
-    unique: true,
   })
   title: string;
 
@@ -42,7 +37,7 @@ export class Todo extends BaseEntity {
   })
   deleted: boolean;
 
-  public searchQuery(q) {
+  static searchQuery(q) {
     const regex = new RegExp(q);
     return [
       { title: { $regex: regex, $options: 'i' } },
@@ -51,4 +46,24 @@ export class Todo extends BaseEntity {
   }
 }
 
-export const TodoSchema = SchemaFactory.createForClass(Todo);
+let TodoSchema: any = SchemaFactory.createForClass(Todo);
+
+// TodoSchema.statics.iDToken = 'tod';
+TodoSchema.statics.softDelete = true;
+TodoSchema.statics.uniques = [];
+TodoSchema.statics.returnDuplicate = false;
+TodoSchema.statics.fillables = ['title', 'description'];
+TodoSchema.statics.updateFillables = [];
+TodoSchema.statics.hiddenFields = ['deleted'];
+
+TodoSchema.statics.searchQuery = (q) => {
+  const regex = new RegExp(q);
+  return [
+    { title: { $regex: regex, $options: 'i' } },
+    { description: { $regex: regex, $options: 'i' } },
+  ];
+};
+
+export {
+  TodoSchema,
+};

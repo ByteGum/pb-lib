@@ -24,7 +24,7 @@ export class JobService {
 
   public send(task: any, job: Job) {
     Logger.log(`Sent Job::::${job.queueName} Task:${task}`);
-    this.client.send(task, job.getId()).subscribe(
+    this.client.send(task, job.getData()).subscribe(
       (res) =>
         Logger.log(
           `Finished Job:::: ${job.queueName}, Task:${task} in ${res.duration}`,

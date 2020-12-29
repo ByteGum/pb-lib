@@ -22,7 +22,7 @@ import { BaseController } from '../../../_shared/_base';
 import { JwtAuthGuard } from '../../../_shared/guards';
 
 @Controller('todos')
-export class TodoController extends BaseController<TodoDocument, Todo> {
+export class TodoController extends BaseController<TodoDocument> {
   constructor(protected service: TodoService, protected config: ConfigService) {
     super(config, service);
   }

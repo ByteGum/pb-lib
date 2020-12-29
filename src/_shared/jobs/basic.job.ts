@@ -5,8 +5,6 @@ import { Job } from './job';
 import { WorkerQueue } from '../common';
 
 export class BasicJob extends Job {
-  protected data?: any;
-
   constructor(data?: any) {
     super(WorkerQueue.PROCESS_WORK);
     this.data = data;
@@ -15,9 +13,5 @@ export class BasicJob extends Job {
   public setData(data: any) {
     this.data = data;
     return this;
-  }
-
-  public getData(data: any) {
-    return this.data;
   }
 }
