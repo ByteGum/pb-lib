@@ -51,11 +51,9 @@ let TodoSchema: any = SchemaFactory.createForClass(Todo);
 // TodoSchema.statics.iDToken = 'tod';
 TodoSchema.statics.config = () => {
   return {
+    iDToken: 'tdd',
     softDelete: true,
-    uniques: [],
-    returnDuplicate: true,
     fillables: ['title', 'description'],
-    updateFillables: [],
     hiddenFields: ['deleted'],
   }
 };

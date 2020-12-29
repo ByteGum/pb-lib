@@ -39,7 +39,6 @@ export class BaseService<T extends Document> {
     this.entity = model;
     if (!this.entity.config) {
       this.entity.config = this.defaultConfig.config;
-      console.log('this.entity.cofig : ', this.entity.config());
     }
   }
 
