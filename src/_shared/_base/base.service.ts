@@ -17,13 +17,30 @@ export class BaseService<T extends Document> {
   public readonly modelName: string;
   public baseUrl: string = 'localhost:3000';
   public itemsPerPage: number = 10;
-  public entity: any;
+  public entity;
+
+  private defaultConfig: any = {
+    config: () => {
+      return {
+        softDelete: false,
+        uniques: [],
+        returnDuplicate: false,
+        fillables: [],
+        updateFillables: [],
+        hiddenFields: ['deleted'],
+      };
+    },
+  };
 
   constructor(
     protected readonly model: any,
   ) {
     this.modelName = model.collection.collectionName;
     this.entity = model;
+    if (!this.entity.config) {
+      this.entity.config = this.defaultConfig.config;
+      console.log('this.entity.cofig : ', this.entity.config());
+    }
   }
 
   public get Model() {
@@ -53,19 +70,15 @@ export class BaseService<T extends Document> {
    * @return {Object}
    */
   public async createNewObject(obj, session?) {
-    const tofill = this.getConfig(this.entity.fillables);
+    const tofill = this.entity.config().fillables;
     if (tofill && tofill.length > 0) {
       obj = _.pick(obj, ...tofill);
     }
     const data = new this.model({
       ...obj,
-      publicId: Utils.generateUniqueId(this.getConfig(this.entity.iDToken)),
+      publicId: Utils.generateUniqueId(this.entity.config().iDToken),
     });
     return data.save();
-  }
-
-  public getConfig(config) {
-    return config && typeof config === 'function' ? config() : null;
   }
 
   /**
@@ -74,7 +87,7 @@ export class BaseService<T extends Document> {
    * @return {Object}
    */
   async updateObject(id, obj) {
-    const tofill = this.getConfig(this.entity.fillables);
+    const tofill = this.entity.config().fillables;
     if (tofill && tofill.length > 0) {
       obj = _.pick(obj, ...tofill);
     }
@@ -91,7 +104,7 @@ export class BaseService<T extends Document> {
    * @return {Object}
    */
   async patchUpdate(current, obj) {
-    const tofill = this.getConfig(this.entity.updateFillables);
+    const tofill = this.entity.config().updateFillables;
     if (tofill && tofill.length > 0) {
       obj = _.pick(obj, ...tofill);
     }
@@ -118,8 +131,7 @@ export class BaseService<T extends Document> {
    * @return {Object}
    */
   public async deleteObject(object) {
-    console.log('delete ', this.getConfig(this.entity.softDelete()));
-    if (this.entity.softDelete()) {
+    if (this.entity.config().softDelete) {
       _.extend(object, { deleted: true });
       object = await object.save();
     } else {
@@ -158,12 +170,12 @@ export class BaseService<T extends Document> {
         }
         meta.pagination = option.pagination.done();
       }
-      if (this.getConfig(this.entity.hiddenFields)) {
+      if (this.entity.config().hiddenFields) {
         const isFunction = typeof option.value.toJSON === 'function';
         if (_.isArray(option.value)) {
-          option.value = option.value.map(v => _.omit((isFunction) ? v.toJSON() : v, ...this.model.hiddenFields()));
+          option.value = option.value.map(v => _.omit((isFunction) ? v.toJSON() : v, ...this.model.config().hiddenFields));
         } else {
-          option.value = _.omit((isFunction) ? option.value.toJSON() : option.value, ...this.model.hiddenFields());
+          option.value = _.omit((isFunction) ? option.value.toJSON() : option.value, ...this.model.config().hiddenFields);
         }
       }
       return AppResponse.format(meta, option.value);
@@ -187,8 +199,7 @@ export class BaseService<T extends Document> {
    * @return {Object}
    */
   public async findQuery(obj, session = null) {
-    const tofill = this.getConfig(this.entity.fillables);
-    this.entity.fillables();
+    const tofill = this.entity.config().fillables;
     if (tofill && tofill.length > 0) {
       obj = _.pick(obj, ...tofill);
     }
@@ -285,8 +296,8 @@ export class BaseService<T extends Document> {
    * @return {Promise<Object>}
    */
   public async retrieveExistingResource(obj) {
-    if (this.getConfig(this.entity.uniques)) {
-      const uniqueKeys = this.entity.uniques();
+    if (this.entity.config().uniques) {
+      const uniqueKeys = this.entity.config().uniques;
       const query = {};
       for (const key of uniqueKeys) {
         query[key] = obj[key];

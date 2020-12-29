@@ -49,12 +49,16 @@ export class Todo {
 let TodoSchema: any = SchemaFactory.createForClass(Todo);
 
 // TodoSchema.statics.iDToken = 'tod';
-TodoSchema.statics.softDelete = () => true;
-TodoSchema.statics.uniques = () => [];
-TodoSchema.statics.returnDuplicate = () => false;
-TodoSchema.statics.fillables = () => ['title', 'description'];
-TodoSchema.statics.updateFillables = () => [];
-TodoSchema.statics.hiddenFields = () => ['deleted'];
+TodoSchema.statics.config = () => {
+  return {
+    softDelete: true,
+    uniques: [],
+    returnDuplicate: true,
+    fillables: ['title', 'description'],
+    updateFillables: [],
+    hiddenFields: ['deleted'],
+  }
+};
 
 TodoSchema.statics.searchQuery = (q) => {
   const regex = new RegExp(q);

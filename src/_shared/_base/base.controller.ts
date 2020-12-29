@@ -40,9 +40,9 @@ export class BaseController<T extends Document> {
       }
       let value = await this.service.retrieveExistingResource(payload);
       if (value) {
-        const returnIfFound = this.service.getConfig(this.service.Model.returnDuplicate);
+        const returnIfFound = this.service.Model.config().returnDuplicate;
         if (!returnIfFound) {
-          const messageObj = this.service.Model.uniques().map(m => ({ [m]: `${m} must be unique` }));
+          const messageObj = this.service.Model.config().uniques.map(m => ({ [m]: `${m} must be unique` }));
           const appError = new AppException('Duplicate record is not allowed', HttpStatus.CONFLICT, messageObj);
           return next(appError);
         }
