@@ -17,11 +17,13 @@ export class BaseService<T extends Document> {
   public readonly modelName: string;
   public baseUrl: string = 'localhost:3000';
   public itemsPerPage: number = 10;
+  public entity: any;
 
   constructor(
     protected readonly model: any,
   ) {
     this.modelName = model.collection.collectionName;
+    this.entity = model;
   }
 
   public get Model() {
@@ -51,15 +53,19 @@ export class BaseService<T extends Document> {
    * @return {Object}
    */
   public async createNewObject(obj, session?) {
-    const tofill = this.model.fillables;
+    const tofill = this.getConfig(this.entity.fillables);
     if (tofill && tofill.length > 0) {
       obj = _.pick(obj, ...tofill);
     }
     const data = new this.model({
       ...obj,
-      publicId: Utils.generateUniqueId(this.model.iDToken),
+      publicId: Utils.generateUniqueId(this.getConfig(this.entity.iDToken)),
     });
     return data.save();
+  }
+
+  public getConfig(config) {
+    return config && typeof config === 'function' ? config() : null;
   }
 
   /**
@@ -68,7 +74,7 @@ export class BaseService<T extends Document> {
    * @return {Object}
    */
   async updateObject(id, obj) {
-    const tofill = this.model.fillables;
+    const tofill = this.getConfig(this.entity.fillables);
     if (tofill && tofill.length > 0) {
       obj = _.pick(obj, ...tofill);
     }
@@ -85,8 +91,8 @@ export class BaseService<T extends Document> {
    * @return {Object}
    */
   async patchUpdate(current, obj) {
-    const tofill = this.model.updateFillables;
-    if (tofill.length > 0) {
+    const tofill = this.getConfig(this.entity.updateFillables);
+    if (tofill && tofill.length > 0) {
       obj = _.pick(obj, ...tofill);
     }
     _.extend(current, obj);
@@ -99,7 +105,7 @@ export class BaseService<T extends Document> {
    * @return {Object}
    */
   public async findObject(id, queryParser: QueryParser = null) {
-    const condition: any = { publicId: id, deleted: false };
+    const condition: any = { $or: [{ publicId: id }, { _id: id }], deleted: false };
     const object: any = await this.model.findOne(condition);
     if (!object) {
       throw AppException.NOT_FOUND;
@@ -112,7 +118,8 @@ export class BaseService<T extends Document> {
    * @return {Object}
    */
   public async deleteObject(object) {
-    if (this.model.softDelete) {
+    console.log('delete ', this.getConfig(this.entity.softDelete()));
+    if (this.entity.softDelete()) {
       _.extend(object, { deleted: true });
       object = await object.save();
     } else {
@@ -151,12 +158,12 @@ export class BaseService<T extends Document> {
         }
         meta.pagination = option.pagination.done();
       }
-      if (this.model.hiddenFields && this.model.hiddenFields.length > 0) {
+      if (this.getConfig(this.entity.hiddenFields)) {
         const isFunction = typeof option.value.toJSON === 'function';
         if (_.isArray(option.value)) {
-          option.value = option.value.map(v => _.omit((isFunction) ? v.toJSON() : v, ...this.model.hiddenFields));
+          option.value = option.value.map(v => _.omit((isFunction) ? v.toJSON() : v, ...this.model.hiddenFields()));
         } else {
-          option.value = _.omit((isFunction) ? option.value.toJSON() : option.value, ...this.model.hiddenFields);
+          option.value = _.omit((isFunction) ? option.value.toJSON() : option.value, ...this.model.hiddenFields());
         }
       }
       return AppResponse.format(meta, option.value);
@@ -180,7 +187,8 @@ export class BaseService<T extends Document> {
    * @return {Object}
    */
   public async findQuery(obj, session = null) {
-    const tofill = this.model.fillables;
+    const tofill = this.getConfig(this.entity.fillables);
+    this.entity.fillables();
     if (tofill && tofill.length > 0) {
       obj = _.pick(obj, ...tofill);
     }
@@ -199,10 +207,10 @@ export class BaseService<T extends Document> {
     console.log('queryParser.query ::::: ', queryParser.query);
     let query = this.model.find(queryParser.query);
     if (
-      queryParser.search && this.model.searchQuery &&
-      this.model.searchQuery(queryParser.search).length > 0
+      queryParser.search && this.entity.searchQuery &&
+      this.entity.searchQuery(queryParser.search).length > 0
     ) {
-      const searchQuery = this.model.searchQuery(queryParser.search);
+      const searchQuery = this.entity.searchQuery(queryParser.search);
       queryParser.query = {
         $or: [...searchQuery],
         ...queryParser.query,
@@ -277,8 +285,8 @@ export class BaseService<T extends Document> {
    * @return {Promise<Object>}
    */
   public async retrieveExistingResource(obj) {
-    if (this.model.uniques && !_.isEmpty(this.model.uniques)) {
-      const uniqueKeys = this.model.uniques;
+    if (this.getConfig(this.entity.uniques)) {
+      const uniqueKeys = this.entity.uniques();
       const query = {};
       for (const key of uniqueKeys) {
         query[key] = obj[key];
