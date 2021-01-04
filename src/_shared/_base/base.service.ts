@@ -150,6 +150,7 @@ export class BaseService<T extends Document> {
     return object;
   }
 
+
   /**
    * @param {ResponseOption} option: required email for search
    * @return {Object} The formatted response
@@ -177,12 +178,25 @@ export class BaseService<T extends Document> {
         }
         meta.pagination = option.pagination.done();
       }
-      if (this.entity.config().hiddenFields) {
+      if (
+        this.entity.config().hiddenFields &&
+        this.entity.config().hiddenFields.length
+      ) {
         const isFunction = typeof option.value.toJSON === 'function';
-        if (_.isArray(option.value)) {
-          option.value = option.value.map(v => _.omit((isFunction) ? v.toJSON() : v, ...this.model.config().hiddenFields));
+        if (Array.isArray(option.value)) {
+          option.value = option.value.map((v) =>
+            typeof v === 'string'
+              ? v
+              : _.omit(
+              isFunction ? v.toJSON() : v,
+              ...this.entity.config().hiddenFields,
+              ),
+          );
         } else {
-          option.value = _.omit((isFunction) ? option.value.toJSON() : option.value, ...this.model.config().hiddenFields);
+          option.value = _.omit(
+            isFunction ? option.value.toJSON() : option.value,
+            ...this.entity.config().hiddenFields,
+          );
         }
       }
       return AppResponse.format(meta, option.value);
