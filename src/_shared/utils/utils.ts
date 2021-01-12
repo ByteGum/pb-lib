@@ -1,5 +1,6 @@
 import * as crypto from 'crypto';
 import * as _ from 'lodash';
+import * as mongoose from 'mongoose';
 import pickKeys from 'json-pick-keys';
 import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
@@ -125,4 +126,13 @@ export class Utils {
     const generator = new IdGenerator();
     return generator.new(key || 'key');
   }
+
+  /**
+   * convert to uppercase 1st letter
+   * @param value
+   * @return {Boolean} The code
+   */
+  static IsObjectId(value) {
+    return value && value.length > 12 && String(mongoose.Types.ObjectId(value)) === String(value);
+  };
 }

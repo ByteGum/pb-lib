@@ -1,4 +1,6 @@
 import * as _ from 'lodash';
+import * as mongoose from 'mongoose';
+import { Utils } from '../utils';
 
 /**
  * The QueryParser class
@@ -34,7 +36,6 @@ export class QueryParser {
     // Only get collection that has not been virtually deleted.
     _.extend(this.query, { deleted: false });
     Object.assign(this, this.query);
-    // TODO: Show emma
   }
 
 
@@ -80,6 +81,7 @@ export class QueryParser {
     return [];
   }
 
+
   /**
    * @param {Object} value is the population object
    */
@@ -122,6 +124,82 @@ export class QueryParser {
   }
 
   /**
+   * @param {Object} query is the population object
+   */
+  processNestedQuery(query) {
+    let value = query.nested;
+    let result = {};
+    if (value) {
+      try {
+        value = JSON.parse(value.toString());
+        for (const filter of value) {
+          if (filter.hasOwnProperty('key') && filter.hasOwnProperty('value')) {
+            if (filter.hasOwnProperty('isValue')) {
+              filter.value = { $in: filter.value.in_array };
+            } else {
+              filter.value = { $in: filter.value.in_array.map(v => mongoose.Types.ObjectId(v)) };
+            }
+            result[filter.key] = filter.value;
+          }
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * @param {Object} query is the population object
+   */
+  processConditionQuery(query) {
+    let value = query.condition;
+    let result = {};
+    if (value) {
+      try {
+        value = JSON.parse(value.toString());
+        if (value.hasOwnProperty('key')) {
+          const filters = [];
+          for (const condition of value.array) {
+            if (condition.hasOwnProperty('key') && condition.hasOwnProperty('value')) {
+              if (Utils.IsObjectId(condition.value)) {
+                filters.push({ [condition.key]: mongoose.Types.ObjectId(condition.value) });
+              } else {
+                filters.push({ [condition.key]: condition.value });
+              }
+            }
+          }
+          result[`$${value.key}`] = filters;
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * @param {Object} query is the population object
+   */
+  processRegSearch(query) {
+    const value = query.regex;
+    const result = {};
+    if (!_.isObject(value)) {
+      try {
+        const regex = JSON.parse(value.toString());
+        for (const r of regex) {
+          const q = new RegExp(r.value);
+          result[r.key] = { $regex: q, $options: 'i' };
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    return result;
+  }
+
+
+  /**
    *  Initialise all the special object required for the find query
    *  @param {Object} query This is a query object of the request
    */
@@ -136,6 +214,15 @@ export class QueryParser {
     }
     if (query.selection) {
       this.selection = query.selection;
+    }
+    if (query.nested) {
+      this.query = { ...this.query, ...this.processNestedQuery(query) };
+    }
+    if (query.condition) {
+      this.query = { ...this.query, ...this.processConditionQuery(query) };
+    }
+    if (query.regex) {
+      this.query = { ...this.query, ...this.processRegSearch(query) };
     }
   }
 }
