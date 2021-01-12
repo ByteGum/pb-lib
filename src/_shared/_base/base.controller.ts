@@ -214,7 +214,7 @@ export class BaseController<T extends Document> {
       const response = await this.service.getResponse({
         code: HttpStatus.OK,
         value: {
-          _id: object._id,
+          _id: (object) ? object._id : null,
         },
       });
       return res.status(HttpStatus.OK).json(response);
