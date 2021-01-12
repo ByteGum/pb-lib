@@ -133,11 +133,11 @@ export class QueryParser {
       try {
         value = JSON.parse(value.toString());
         for (const filter of value) {
-          if (filter.hasOwnProperty('key') && filter.hasOwnProperty('value')) {
+          if (filter.hasOwnProperty('key') && filter.hasOwnProperty('value') && filter.hasOwnProperty('inArray')) {
             if (filter.hasOwnProperty('isValue')) {
-              filter.value = { $in: filter.value.in_array };
+              filter.value = { $in: filter.value.inArray };
             } else {
-              filter.value = { $in: filter.value.in_array.map(v => mongoose.Types.ObjectId(v)) };
+              filter.value = { $in: filter.value.inArray.map(v => mongoose.Types.ObjectId(v)) };
             }
             result[filter.key] = filter.value;
           }
