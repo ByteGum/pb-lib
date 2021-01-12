@@ -330,4 +330,14 @@ export class BaseService<T extends Document> {
     }
     return null;
   }
+
+  /**
+   * @param {String} id The payload object
+   * @param {QueryParser} queryParser The payload object
+   * @return {Object}
+   */
+  public async validateObject(id) {
+    const condition: any = { $or: [{ publicId: id }, { _id: id }], deleted: false };
+    return this.model.findOne(condition);
+  }
 }

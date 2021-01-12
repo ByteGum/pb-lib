@@ -205,4 +205,21 @@ export class BaseController<T extends Document> {
       next(err);
     }
   }
+
+  @Get('/:id/validate')
+  @HttpCode(HttpStatus.OK)
+  public async validate(@Param('id') id: string, @Req() req, @Res() res, @Next() next: NextFunction) {
+    try {
+      const object = await this.service.validateObject(id);
+      const response = await this.service.getResponse({
+        code: HttpStatus.OK,
+        value: {
+          _id: object._id,
+        },
+      });
+      return res.status(HttpStatus.OK).json(response);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
