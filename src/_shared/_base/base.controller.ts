@@ -222,4 +222,27 @@ export class BaseController<T extends Document> {
       next(err);
     }
   }
+
+  @Get('/search/one')
+  @HttpCode(HttpStatus.OK)
+  public async searchOne(@Req() req, @Res() res, @Next() next: NextFunction) {
+    try {
+      const queryParser = new QueryParser(Object.assign({}, req.query));
+      const query = _.omit(queryParser.query, ['deleted']);
+      let object = null;
+      if (!_.isEmpty(query)) {
+        object = await this.service.searchObject({ ...queryParser.query });
+      }
+
+      const response = await this.service.getResponse({
+        code: HttpStatus.OK,
+        value: (object) ? object : {
+          _id: null,
+        },
+      });
+      return res.status(HttpStatus.OK).json(response);
+    } catch (err) {
+      next(err);
+    }
+  }
 }

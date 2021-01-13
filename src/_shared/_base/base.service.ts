@@ -340,4 +340,13 @@ export class BaseService<T extends Document> {
     const condition: any = { $or: [{ publicId: id }, { _id: id }], deleted: false };
     return this.model.findOne(condition);
   }
+
+  /**
+   * @param {String} id The payload object
+   * @param {QueryParser} queryParser The payload object
+   * @return {Object}
+   */
+  public async searchObject(queryParser: QueryParser) {
+    return await this.model.findOne({ ...queryParser.query });
+  }
 }

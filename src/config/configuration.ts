@@ -5,9 +5,9 @@ export default () => ({
   },
   service: {
     serviceName: 'Todo Service',
-    port: 3010,
-    host: 'http://localhost:3010',
-    url: `http://localhost:3010`,
+    port: 3000,
+    host: 'http://localhost:3000',
+    url: `http://localhost:3000`,
     version: 1,
     lang: 'en',
     pagination: {
