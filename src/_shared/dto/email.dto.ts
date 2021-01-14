@@ -6,6 +6,6 @@ export class EmailDto {
   @ApiProperty({ example: 'example@test.com' })
   @IsEmail()
   @IsNotEmpty()
-  @Transform((s) => s.trim().toLowerCase())
+  @Transform((s) => String(s.value).trim().toLowerCase())
   readonly email: string;
 }

@@ -11,6 +11,6 @@ export class MobileDto {
   @IsString()
   @IsOptional()
   @Length(2, 2)
-  @Transform(s => s.trim())
+  @Transform((s) => String(s.value).trim().toLowerCase())
   readonly isoCode: string = 'NG';
 }
