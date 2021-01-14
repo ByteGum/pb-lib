@@ -99,7 +99,7 @@ export class BaseService<T extends Document> {
       obj = _.pick(obj, ...tofill);
     }
     return this.model.findOneAndUpdate(
-      { publicId: id },
+      { $or: [{ publicId: id }, { _id: id }] },
       { ...obj },
       { upsert: true, new: true, setDefaultsOnInsert: true },
     );
